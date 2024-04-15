@@ -54,8 +54,6 @@ public class TollCalculator
 
     public int CalculateTollFee(DateTime currentPass)
     {
-        if (IsTollFreeDate(currentPass))) return 0;
-
         var hour = currentPass.Hour;
         var minute = currentPass.Minute;
 
