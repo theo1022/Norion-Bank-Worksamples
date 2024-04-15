@@ -2,18 +2,15 @@
 using System.Globalization;
 using TollFeeCalculator;
 
-public class TollCalculator
+public static class TollCalculator
 {
-
-    /**
-     * Calculate the total toll fee for one day
-     *
-     * @param vehicle - the vehicle
-     * @param dates   - date and time of all passes on one day
-     * @return - the total toll fee for that day
-     */
-
-    public int GetTollFee(Vehicle vehicle, DateTime[] passes)
+    /// <summary>
+    /// Calculate the total toll fee for one day
+    /// </summary>
+    /// <param name="vehicle">the vehicle</param>
+    /// <param name="passes">date and time of all passes on one day</param>
+    /// <returns>the total toll fee for that day</returns>
+    public static int GetTollFee(Vehicle vehicle, DateTime[] passes)
     {
         if (IsTollFreeVehicle(vehicle)) return 0;
 
@@ -43,7 +40,7 @@ public class TollCalculator
         return Math.Min(totalFee, maxFee);
     }
 
-    private bool IsTollFreeVehicle(Vehicle vehicle)
+    private static bool IsTollFreeVehicle(Vehicle vehicle)
     {
         foreach (var tollFreeVehicle in Enum.GetValues(typeof(TollFreeVehicles)))
         {
@@ -52,10 +49,10 @@ public class TollCalculator
         return false;
     }
 
-    public int CalculateTollFee(DateTime currentPass)
+    private static int CalculateTollFee(DateTime pass)
     {
-        var hour = currentPass.Hour;
-        var minute = currentPass.Minute;
+        var hour = pass.Hour;
+        var minute = pass.Minute;
 
         if (hour >= 6 && (hour <= 18 && minute < 30))
         {
@@ -81,7 +78,7 @@ public class TollCalculator
         return 0;
     }
 
-    private bool IsTollFreeDate(DateTime date)
+    private static bool IsTollFreeDate(DateTime date)
     {
         int year = date.Year;
         int month = date.Month;
@@ -104,7 +101,7 @@ public class TollCalculator
         return false;
     }
 
-    public bool PreviousPassLessThan60MinutesAgo(DateTime currentPass, DateTime lastPassed)
+    private static bool PreviousPassLessThan60MinutesAgo(DateTime currentPass, DateTime lastPassed)
     {
         return (currentPass - lastPassed).TotalMinutes < 60;
     }
@@ -116,6 +113,6 @@ public class TollCalculator
         Emergency = 2,
         Diplomat = 3,
         Foreign = 4,
-        Military = 5
+        Military = 5,
     }
 }
