@@ -13,33 +13,34 @@ public class TollCalculator
      * @return - the total toll fee for that day
      */
 
-    public int GetTollFee(Vehicle vehicle, DateTime[] dates)
+    public int GetTollFee(Vehicle vehicle, DateTime[] passes)
     {
         if (IsTollFreeVehicle(vehicle)) return 0;
 
-        DateTime intervalStart = dates[0];
-        int totalFee = 0;
-        foreach (DateTime date in dates)
+        var totalFee = 0;
+        var maxFee = 60;
+
+        var previousPass = passes[0];
+
+        foreach (var pass in passes)
         {
-            int nextFee = CalculateTollFee(date);
-            int tempFee = CalculateTollFee(intervalStart);
-
-            long diffInMillies = date.Millisecond - intervalStart.Millisecond;
-            long minutes = diffInMillies/1000/60;
-
-            if (minutes <= 60)
+            if (IsTollFreeDate(pass))
             {
-                if (totalFee > 0) totalFee -= tempFee;
-                if (nextFee >= tempFee) tempFee = nextFee;
-                totalFee += tempFee;
+                previousPass = pass;
+                continue;
             }
-            else
-            {
-                totalFee += nextFee;
-            }
+
+            var passFee = CalculateTollFee(pass);
+
+            if (PreviousPassLessThan60MinutesAgo(pass, previousPass)) passFee = Math.Max(passFee, CalculateTollFee(previousPass));
+
+            totalFee += passFee;
+
+            if (totalFee >= maxFee) break;
+
+            previousPass = pass;
         }
-        if (totalFee > 60) totalFee = 60;
-        return totalFee;
+        return Math.Min(totalFee, maxFee);
     }
 
     private bool IsTollFreeVehicle(Vehicle vehicle)
@@ -105,6 +106,11 @@ public class TollCalculator
             }
         }
         return false;
+    }
+
+    public bool PreviousPassLessThan60MinutesAgo(DateTime currentPass, DateTime lastPassed)
+    {
+        return (currentPass - lastPassed).TotalMinutes < 60;
     }
 
     private enum TollFreeVehicles
