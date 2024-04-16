@@ -10,7 +10,7 @@ public static class TollCalculator
     /// <param name="vehicle">the vehicle</param>
     /// <param name="passes">date and time of all passes on one day</param>
     /// <returns>the total toll fee for that day</returns>
-    public static int GetTollFee(Vehicle vehicle, DateTime[] passes)
+    public static int GetDailyTollFee(Vehicle vehicle, DateTime[] passes)
     {
         if (IsTollFreeVehicle(vehicle) || IsTollFreeDate(passes[0])) return 0;
 
