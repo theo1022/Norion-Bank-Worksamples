@@ -12,7 +12,7 @@ public static class TollCalculator
     /// <returns>the total toll fee for that day</returns>
     public static int GetTollFee(Vehicle vehicle, DateTime[] passes)
     {
-        if (IsTollFreeVehicle(vehicle)) return 0;
+        if (IsTollFreeVehicle(vehicle) || IsTollFreeDate(passes[0])) return 0;
 
         var totalFee = 0;
         var maxFee = 60;
@@ -21,12 +21,6 @@ public static class TollCalculator
 
         foreach (var pass in passes)
         {
-            if (IsTollFreeDate(pass))
-            {
-                previousPass = pass;
-                continue;
-            }
-
             var passFee = CalculateTollFee(pass);
 
             if (PreviousPassLessThan60MinutesAgo(pass, previousPass)) passFee = Math.Max(passFee, CalculateTollFee(previousPass));
