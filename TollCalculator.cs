@@ -15,21 +15,30 @@ public static class TollCalculator
         if (IsTollFreeVehicle(vehicle) || IsTollFreeDate(passes[0])) return 0;
 
         var totalFee = 0;
-        var maxFee = 60;
+        const int maxFee = 60;
 
-        var previousPass = passes[0];
+        var intervalStart = passes[0];
+        var previousFee = 0;
 
         foreach (var pass in passes)
         {
             var passFee = CalculateTollFee(pass);
 
-            if (PreviousPassLessThan60MinutesAgo(pass, previousPass)) passFee = Math.Max(passFee, CalculateTollFee(previousPass));
+            if (IntervalStartLessThan60MinutesAgo(pass, intervalStart))
+            {
+                if (passFee > previousFee)
+                {
+                    totalFee -= previousFee;
+                    totalFee += passFee;
+                    previousFee = passFee;
+                }
+                continue;
+            }
 
             totalFee += passFee;
+            intervalStart = pass;
 
             if (totalFee >= maxFee) break;
-
-            previousPass = pass;
         }
         return Math.Min(totalFee, maxFee);
     }
@@ -95,9 +104,9 @@ public static class TollCalculator
         return false;
     }
 
-    private static bool PreviousPassLessThan60MinutesAgo(DateTime currentPass, DateTime lastPassed)
+    private static bool IntervalStartLessThan60MinutesAgo(DateTime currentPass, DateTime intervalStart)
     {
-        return (currentPass - lastPassed).TotalMinutes < 60;
+        return (currentPass - intervalStart).TotalMinutes < 60;
     }
 
     private enum TollFreeVehicles
